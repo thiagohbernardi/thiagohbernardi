@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>EIV: {{ eiv.capa.titulo_projeto }}</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        h1, h2 { color: #333; }
+        .section { margin-bottom: 20px; padding: 10px; border: 1px solid #eee; }
+        .label { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="section">
+        <h2>Capa</h2>
+        <p><span class="label">Título do Projeto EIV:</span> {{ eiv.capa.titulo_projeto }}</p>
+        <p><span class="label">Responsável pelo EIV:</span> {{ eiv.capa.responsavel_eiv.nome }}
+           {% if eiv.capa.responsavel_eiv.titulo %}({{ eiv.capa.responsavel_eiv.titulo }}){% endif %}
+        </p>
+        <p><span class="label">Empresa/Organização:</span> {{ eiv.capa.empresa_organizacao }}</p>
+        <p><span class="label">Data de Elaboração:</span> {{ eiv.capa.data_elaboracao }}</p>
+    </div>
+
+    <div class="section">
+        <h2>Introdução</h2>
+        <p><span class="label">Justificativa:</span> {{ eiv.introducao.justificativa }}</p>
+        <h3>Contexto do Projeto</h3>
+        <p><span class="label">Título do Projeto:</span> {{ eiv.introducao.contexto_projeto.titulo_projeto }}</p>
+        <p><span class="label">Tipo:</span> {{ eiv.introducao.contexto_projeto.tipo_projeto }}</p>
+        <p><span class="label">Escopo:</span> {{ eiv.introducao.contexto_projeto.escopo_projeto }}</p>
+        <p><span class="label">Proprietário:</span> {{ eiv.introducao.contexto_projeto.proprietario_projeto }}</p>
+        <h3>Localização</h3>
+        <p><span class="label">Descrição:</span> {{ eiv.introducao.localizacao_exata.descricao }}</p>
+        <p><span class="label">Latitude:</span> {{ eiv.introducao.localizacao_exata.latitude }}</p>
+        <p><span class="label">Longitude:</span> {{ eiv.introducao.localizacao_exata.longitude }}</p>
+        {% if eiv.introducao.localizacao_exata.temperatura_atual_celsius is not none %}
+        <p><span class="label">Temperatura Atual:</span> {{ eiv.introducao.localizacao_exata.temperatura_atual_celsius }} °C</p>
+        {% endif %}
+        <h3>Objetivos do EIV</h3>
+        <p><span class="label">Geral:</span> {{ eiv.introducao.objetivo_geral_eiv }}</p>
+        <p><span class="label">Específicos:</span></p>
+        <ul>
+            {% for objetivo in eiv.introducao.objetivos_especificos_eiv %}
+            <li>{{ objetivo }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Outras seções virão aqui -->
+
+</body>
+</html>
