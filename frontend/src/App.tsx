@@ -24,6 +24,9 @@ const theme = createTheme({
     secondary: {
       main: '#ffc107', // Âmbar
     },
+    info: { // Added info color
+      main: '#0288d1', // Blue 700
+    }
   },
   typography: {
     fontFamily: 'Roboto, Arial, sans-serif',
@@ -49,20 +52,21 @@ function App() {
   const [introducaoData, setIntroducaoData] = useState<IntroducaoData | null>(null);
   const [eivPreviewUrl, setEivPreviewUrl] = useState<string | null>(null);
   const [eivPdfUrl, setEivPdfUrl] = useState<string | null>(null);
+  const [weatherMessageFromGeneration, setWeatherMessageFromGeneration] = useState<string | null>(null);
 
 
   const handleCapaSubmit = async (data: CapaData) => {
     console.log('Capa Data:', data);
     // Idealmente, aqui você chamaria submitCapaData(data) se quisesse salvar separadamente
     setCapaData(data);
-    handleNext();
+    // handleNext() REMOVED
   };
 
   const handleIntroducaoSubmit = async (data: IntroducaoData) => {
     console.log('Introdução Data:', data);
      // Idealmente, aqui você chamaria submitIntroducaoData(data) se quisesse salvar separadamente
     setIntroducaoData(data);
-    handleNext();
+    // handleNext() REMOVED
   };
 
   const handleFullSubmit = async () => {
@@ -74,6 +78,8 @@ function App() {
       try {
         const response = await submitEIVCompleto(fullEIVData);
         console.log('EIV Completo Submetido:', response);
+        const message = response.introducao?.localizacao_exata?.weather_data_message;
+        setWeatherMessageFromGeneration(message || null);
         // Gera um ID de projeto simples para visualização (deve ser melhorado)
         const projectId = response.capa.titulo_projeto.replace(/\s+/g, '_').toLowerCase();
         setEivPreviewUrl(`http://localhost:8000/eiv/${projectId}/visualizar`); // URL para o endpoint GET do backend
@@ -96,6 +102,7 @@ function App() {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
     setEivPreviewUrl(null);
     setEivPdfUrl(null); // Limpa a URL de preview ao voltar
+    setWeatherMessageFromGeneration(null); // Limpa a mensagem do clima
   };
 
   const handleReset = () => {
@@ -104,6 +111,7 @@ function App() {
     setIntroducaoData(null);
     setEivPreviewUrl(null);
     setEivPdfUrl(null);
+    setWeatherMessageFromGeneration(null); // Limpa a mensagem do clima
   };
 
   const getStepContent = (step: number) => {
@@ -116,15 +124,12 @@ function App() {
         return (
           <FullWidthPaper>
             <Typography variant="h5" gutterBottom>Revisar e Gerar EIV</Typography>
-            {capaData && introducaoData ? (
-              <>
-                <Typography paragraph>Todos os dados foram preenchidos. Clique em "Gerar EIV Completo" para processar.</Typography>
-                <Button onClick={handleFullSubmit} variant="contained" color="primary">
-                  Gerar EIV Completo
-                </Button>
-              </>
-            ) : (
-              <Typography paragraph>Por favor, preencha os dados da Capa e Introdução nas etapas anteriores.</Typography>
+            <Typography paragraph>Revise os dados preenchidos nas seções anteriores. Se tudo estiver correto, clique em "Gerar EIV Completo".</Typography>
+            {/* O botão de ação principal para esta etapa será gerenciado pelo Stepper global abaixo,
+                mas o conteúdo informativo permanece aqui. A lógica de desabilitar o botão global
+                impedirá a submissão se os dados não estiverem prontos. */}
+            {(!capaData || !introducaoData) && (
+                 <Typography paragraph sx={{color: 'red'}}>Dados da Capa ou Introdução estão faltando. Volte às etapas anteriores para preenchê-los.</Typography>
             )}
           </FullWidthPaper>
         );
@@ -150,16 +155,39 @@ function App() {
                 {getStepContent(index)}
                 <Box sx={{ mb: 2, mt: 2 }}>
                   <div>
+                    {index === 0 && (
+                      <Button
+                        variant="contained"
+                        onClick={handleNext}
+                        sx={{ mt: 1, mr: 1 }}
+                        disabled={!capaData}
+                      >
+                        Próximo (Introdução)
+                      </Button>
+                    )}
+                    {index === 1 && (
+                      <Button
+                        variant="contained"
+                        onClick={handleNext}
+                        sx={{ mt: 1, mr: 1 }}
+                        disabled={!introducaoData}
+                      >
+                        Próximo (Revisar)
+                      </Button>
+                    )}
+                    {index === 2 && (
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleFullSubmit}
+                        sx={{ mt: 1, mr: 1 }}
+                        disabled={!capaData || !introducaoData}
+                      >
+                        Gerar EIV Completo
+                      </Button>
+                    )}
                     <Button
-                      variant="contained"
-                      onClick={index === steps.length -1 ? handleFullSubmit : handleNext} // Não é ideal, o handleNext é chamado dentro dos submits
-                      sx={{ mt: 1, mr: 1 }}
-                      disabled={ (index === 0 && !capaData) || (index === 1 && !introducaoData && activeStep === index) || (index === 2 && (!capaData || !introducaoData)) }
-                    >
-                      {index === steps.length - 1 ? 'Gerar EIV' : (index === 0 && capaData ? 'Próximo (Introdução)' : (index === 1 && introducaoData ? 'Próximo (Revisar)' : 'Preencha para Continuar'))}
-                    </Button>
-                    <Button
-                      disabled={index === 0}
+                      disabled={index === 0 && activeStep === 0} // Desabilitar "Voltar" apenas na primeira etapa se ela for a ativa
                       onClick={handleBack}
                       sx={{ mt: 1, mr: 1 }}
                     >
@@ -175,7 +203,12 @@ function App() {
         {activeStep === steps.length && (
           <FullWidthPaper sx={{ p: 3, mt: 2, mb: 2 }}>
             <Typography variant="h5" gutterBottom>EIV Gerado!</Typography>
-            {(eivPreviewUrl || eivPdfUrl) && (
+            {weatherMessageFromGeneration && (
+              <Typography paragraph sx={{ color: theme.palette.info.main, fontStyle: 'italic' }}>
+                Status do Clima: {weatherMessageFromGeneration}
+              </Typography>
+            )}
+            {(eivPreviewUrl || eivPdfUrl) ? (
                 <>
                     <Typography paragraph>
                         O EIV foi processado. Você pode visualizá-lo ou baixá-lo usando os links abaixo.
@@ -204,14 +237,16 @@ function App() {
                         </Button>
                     }
                 </>
+            ) : (
+                 <Typography paragraph>Ocorreu um problema e as URLs do EIV não foram geradas. Tente novamente.</Typography>
             )}
             <Typography paragraph>Você pode reiniciar o processo ou refinar os dados.</Typography>
             <Button onClick={handleReset} sx={{ mt: 1, mr: 1 }}>
               Gerar Novo EIV (Reiniciar)
             </Button>
              <Button
-                disabled={activeStep !== steps.length} // Só pode voltar da última etapa
-                onClick={handleBack}
+                // disabled={activeStep !== steps.length} // Esta condição é sempre verdadeira aqui
+                onClick={handleBack} // handleBack já lida com a lógica de estado
                 sx={{ mt: 1, mr: 1 }}
             >
                 Voltar para Edição

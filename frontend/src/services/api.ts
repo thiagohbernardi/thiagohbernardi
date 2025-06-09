@@ -15,6 +15,7 @@ export interface Localizacao {
   descricao?: string;
   latitude?: number;
   longitude?: number;
+  weather_data_message?: string;
 }
 
 export interface ResponsavelEIV {

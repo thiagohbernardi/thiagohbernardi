@@ -7,6 +7,7 @@ class Localizacao(BaseModel):
     latitude: Optional[float] = None
     longitude: Optional[float] = None
     temperatura_atual_celsius: Optional[float] = Field(None, description="Temperatura atual em Celsius obtida da API")
+    weather_data_message: Optional[str] = None
 
 class ResponsavelEIV(BaseModel):
     nome: str = Field(..., example="Dr. Arquiteto Exemplo")

@@ -35,6 +35,11 @@
         <p><span class="label">Longitude:</span> {{ eiv.introducao.localizacao_exata.longitude }}</p>
         {% if eiv.introducao.localizacao_exata.temperatura_atual_celsius is not none %}
         <p><span class="label">Temperatura Atual:</span> {{ eiv.introducao.localizacao_exata.temperatura_atual_celsius }} °C</p>
+        {% elif eiv.introducao.localizacao_exata.weather_data_message %}
+        <p><span class="label">Temperatura Atual:</span> N/A</p>
+        {% endif %}
+        {% if eiv.introducao.localizacao_exata.weather_data_message %}
+        <p><span class="label">Weather Status:</span> {{ eiv.introducao.localizacao_exata.weather_data_message }}</p>
         {% endif %}
         <h3>Objetivos do EIV</h3>
         <p><span class="label">Geral:</span> {{ eiv.introducao.objetivo_geral_eiv }}</p>

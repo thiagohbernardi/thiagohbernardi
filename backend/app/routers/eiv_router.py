@@ -8,6 +8,7 @@ from fastapi.responses import StreamingResponse
 from weasyprint import HTML
 import io
 import httpx
+import logging # Import logging
 
 router = APIRouter(
     prefix="/eiv",
@@ -17,6 +18,9 @@ router = APIRouter(
 # Configurar templates Jinja2
 # Supondo que o diretório 'templates' está em 'backend/app/templates'
 templates = Jinja2Templates(directory="app/templates")
+
+# Get a logger instance
+logger = logging.getLogger(__name__)
 
 # "Banco de dados" em memória para este exemplo inicial
 # No futuro, isso será substituído por um banco de dados real.
@@ -33,21 +37,32 @@ async def criar_ou_atualizar_eiv(eiv_document: EIVDocumentData = Body(...)):
         try:
             async with httpx.AsyncClient(timeout=10.0) as client:
                 meteo_url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lng}&current_weather=true"
-                print(f"Buscando dados climáticos de: {meteo_url}")
+                logger.info(f"Buscando dados climáticos de: {meteo_url}")
                 response = await client.get(meteo_url)
                 response.raise_for_status()
                 weather_data = response.json()
-                print(f"Resposta da API climática: {weather_data}")
-                if weather_data.get("current_weather") and isinstance(weather_data["current_weather"], dict):
-                    eiv_document.introducao.localizacao_exata.temperatura_atual_celsius = weather_data["current_weather"].get("temperature")
+                logger.info(f"Resposta da API climática: {weather_data}")
+                if weather_data.get("current_weather") and \
+                   isinstance(weather_data["current_weather"], dict) and \
+                   weather_data["current_weather"].get("temperature") is not None:
+                    eiv_document.introducao.localizacao_exata.temperatura_atual_celsius = weather_data["current_weather"]["temperature"]
+                    eiv_document.introducao.localizacao_exata.weather_data_message = "Temperature successfully retrieved."
                 else:
-                    print("Estrutura inesperada na resposta da API climática ou current_weather ausente.")
+                    logger.warning("Temperatura não disponível na resposta da API climática ou estrutura inesperada.")
+                    eiv_document.introducao.localizacao_exata.temperatura_atual_celsius = None
+                    eiv_document.introducao.localizacao_exata.weather_data_message = "Could not retrieve weather data: Temperature not available in response."
         except httpx.HTTPStatusError as e:
-            print(f"Erro HTTP ao buscar dados climáticos: {e.response.text if e.response else 'Sem resposta'}")
+            logger.error(f"Erro HTTP ao buscar dados climáticos: {e.response.text if e.response else 'Sem resposta'}")
+            eiv_document.introducao.localizacao_exata.temperatura_atual_celsius = None
+            eiv_document.introducao.localizacao_exata.weather_data_message = "Could not retrieve weather data: API error."
         except httpx.RequestError as e:
-            print(f"Erro de requisição ao buscar dados climáticos: {e}")
+            logger.error(f"Erro de requisição ao buscar dados climáticos: {e}")
+            eiv_document.introducao.localizacao_exata.temperatura_atual_celsius = None
+            eiv_document.introducao.localizacao_exata.weather_data_message = "Weather data service unavailable."
         except Exception as e:
-            print(f"Erro inesperado ({type(e).__name__}) ao buscar dados climáticos: {e}")
+            logger.error(f"Erro inesperado ({type(e).__name__}) ao buscar dados climáticos: {e}")
+            eiv_document.introducao.localizacao_exata.temperatura_atual_celsius = None
+            eiv_document.introducao.localizacao_exata.weather_data_message = f"An unexpected error occurred: {type(e).__name__}."
 
     eiv_data_storage[project_id] = eiv_document
     return eiv_document
