@@ -1,0 +1,109 @@
+/* backend/app/static/css/abnt_styles.css */
+
+body {
+    font-family: 'Times New Roman', Times, serif; /* Ou Arial, conforme preferência/norma específica */
+    font-size: 12pt;
+    line-height: 1.5;
+    word-wrap: break-word; /* Quebra de palavras longas para evitar overflow */
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Times New Roman', Times, serif; /* Ou Arial */
+    /* ABNT não especifica negrito obrigatório para títulos, mas é comum. */
+    /* Espaçamento antes e depois de títulos pode ser ajustado aqui. */
+    /* Ex: NBR 14724, seções primárias começam em nova página - isso é mais complexo, envolve page breaks. */
+}
+
+/* Indicativo para seções primárias (Títulos sem numeração como RESUMO, ABSTRACT, SUMÁRIO, REFERÊNCIAS) */
+.section-title-no-number {
+    text-transform: uppercase;
+    text-align: center; /* Comum para estes títulos, mas verificar NBR específica */
+    font-weight: bold;
+    margin-top: 2em;
+    margin-bottom: 1em;
+}
+
+/* Para títulos numerados (1, 1.1, 1.1.1) */
+h1 { /* Seção primária (ex: 1 TÍTULO) */
+    font-size: 12pt; /* Mesma fonte do texto, mas pode ser negrito */
+    text-transform: uppercase; /* NBR 6024 para numeração progressiva */
+    font-weight: bold;
+    margin-top: 1.5em;
+    margin-bottom: 0.75em;
+}
+
+h2 { /* Seção secundária (ex: 1.1 TÍTULO) */
+    font-size: 12pt;
+    /* text-transform: uppercase; -> NBR 6024 só para primários */
+    font-weight: bold;
+    margin-top: 1.2em;
+    margin-bottom: 0.6em;
+}
+
+h3 { /* Seção terciária (ex: 1.1.1 TÍTULO) */
+    font-size: 12pt;
+    font-style: italic; /* Comum, mas verificar NBR 6024 */
+    /* Ou apenas normal, sem negrito */
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+}
+/* etc. para h4, h5 */
+
+p {
+    text-align: justify;
+    text-indent: 1.25cm; /* Parágrafo na primeira linha, cerca de 1.25cm ou 1.27cm (0.5 polegada) */
+    margin-top: 0;
+    margin-bottom: 0; /* ABNT geralmente não tem espaço extra entre parágrafos do mesmo bloco */
+}
+
+/* Citações diretas longas (mais de 3 linhas) */
+.long-quote {
+    font-size: 10pt; /* Fonte menor */
+    line-height: 1.0; /* Espaçamento simples */
+    text-indent: 4cm;  /* Recuo de 4cm da margem esquerda */
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 0; /* O recuo é feito com text-indent */
+    /* Sem aspas para citações longas no bloco de recuo */
+}
+
+/* Referências - NBR 6023 */
+.references-section {
+    margin-top: 2em;
+}
+.references-section p {
+    text-indent: 0; /* Sem indentação de parágrafo */
+    text-align: left; /* Alinhado à esquerda */
+    line-height: 1.0; /* Espaçamento simples */
+    margin-bottom: 0.5em; /* Espaço entre referências */
+    /* Se for usar espaço entre elas, NBR 6023 sugere um espaço simples em branco. */
+}
+/* Para alinhamento especial da segunda linha em diante (recuo francês), é mais complexo com CSS puro,
+   especialmente se o HTML não ajudar. Pode exigir manipulação no Python ou JS.
+   Exemplo básico:
+   .reference-item { padding-left: 2em; text-indent: -2em; }
+*/
+
+/* Notas de rodapé - NBR 10520 */
+.footnote {
+    font-size: 10pt;
+    line-height: 1.0;
+    /* Posicionamento de notas de rodapé é geralmente tratado pelo processador (Word, WeasyPrint) */
+}
+
+/* Sumário - NBR 6027 */
+/* A geração do sumário em si é feita pelo WeasyPrint baseado em h1,h2,etc.
+   Estilos para o sumário gerado podem ser aplicados aqui.
+   Ex: .toc-entry { ... }
+*/
+
+/* Estilos para tabelas e figuras (NBR 14724) - placeholder */
+table {
+    /* ... */
+}
+.figure-caption {
+    /* ... */
+}
+.table-caption {
+    /* ... */
+}
