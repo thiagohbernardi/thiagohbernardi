@@ -116,3 +116,4 @@ websockets==15.0.1
 zipp==3.21.0
 zopfli==0.2.3.post1
 zstandard==0.23.0
+mammoth

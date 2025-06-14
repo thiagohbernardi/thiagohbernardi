@@ -4,12 +4,14 @@ from fastapi.staticfiles import StaticFiles # Se necessário para servir arquivo
 # from fastapi.templating import Jinja2Templates # Já está no router
 
 from app.routers import eiv_router
+from app.routers import abnt_router # Adicionar esta linha
 import uvicorn
+import os # Adicionar esta linha
 
 app = FastAPI(
     title="EIV Generator API",
-    description="API para gerar Estudos de Impacto de Vizinhança (EIV)",
-    version="0.1.0"
+    description="API para gerar Estudos de Impacto de Vizinhança (EIV) e formatar documentos ABNT.", # Descrição atualizada
+    version="0.1.0" # Poderia ser 0.2.0 com a nova funcionalidade
 )
 
 # Configurar CORS
@@ -30,13 +32,25 @@ app.add_middleware(
 
 # Incluir os routers
 app.include_router(eiv_router.router)
+app.include_router(abnt_router.router)
 
-# Montar um diretório para arquivos estáticos (ex: logotipos carregados), se necessário no futuro
-# app.mount("/static", StaticFiles(directory="app/static"), name="static")
+# Montar um diretório para arquivos estáticos
+# Construir o caminho para o diretório 'static' de forma robusta
+# Assumindo que 'main.py' está em 'backend/app/main.py' e 'static' está em 'backend/app/static'
+current_main_dir = os.path.dirname(os.path.realpath(__file__))
+static_files_dir = os.path.join(current_main_dir, "static")
+
+# Verificar se o diretório static existe antes de montar
+if os.path.exists(static_files_dir) and os.path.isdir(static_files_dir):
+    app.mount("/static", StaticFiles(directory=static_files_dir), name="static")
+    print(f"Servindo arquivos estáticos de: {static_files_dir}")
+else:
+    print(f"ALERTA: Diretório estático não encontrado em {static_files_dir}. Arquivos estáticos não serão servidos.")
+
 
 @app.get("/")
 async def read_root():
-    return {"message": "Bem-vindo à API do Gerador de EIV"}
+    return {"message": "Bem-vindo à API do Gerador de EIV e Formatador ABNT"} # Mensagem atualizada
 
 if __name__ == "__main__":
     # Esta parte é para rodar diretamente com 'python app/main.py', mas geralmente se usa 'uvicorn'

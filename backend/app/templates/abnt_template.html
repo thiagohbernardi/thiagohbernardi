@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Documento ABNT</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='css/abnt_styles.css') }}">
+    {# Em produção com WeasyPrint e FastAPI, pode ser necessário resolver o caminho do CSS de forma diferente
+       se `url_for` não funcionar como esperado no contexto de renderização para PDF.
+       Uma alternativa é embutir o CSS ou usar um caminho absoluto/relativo ao template.
+       Para WeasyPrint, o ideal é que o CSS seja acessível pelo sistema de arquivos ou uma URL completa.
+       Se o CSS estiver no mesmo diretório ou subdiretório do template, caminhos relativos podem funcionar.
+       Por enquanto, vamos tentar com `url_for` e ajustar se necessário no passo de criação do router.
+       Uma abordagem mais robusta para WeasyPrint é fornecer o CSS diretamente:
+       `HTML(string=html_string, base_url=base_url).write_pdf(stylesheets=[CSS(filename='path/to/abnt_styles.css')])`
+       Vamos manter o link rel por simplicidade no template e ajustar no Python do router se preciso.
+    #}
+    <style>
+        /* Estilos que o WeasyPrint precisa para paginação e sumário, se aplicável */
+        @page {
+            size: A4;
+            margin-top: 3cm;
+            margin-left: 3cm;
+            margin-right: 2cm;
+            margin-bottom: 2cm;
+        }
+        /* Adicionar outras regras @page se necessário para diferentes seções */
+    </style>
+</head>
+<body>
+    {# Aqui é onde o conteúdo HTML convertido do DOCX e processado será inserido #}
+    <div class="document-content">
+        {{ content_html|safe }}
+    </div>
+</body>
+</html>
