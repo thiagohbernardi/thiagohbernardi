@@ -14,6 +14,7 @@ import StepContent from '@mui/material/StepContent';
 import CapaForm from './components/Forms/CapaForm';
 import IntroducaoForm from './components/Forms/IntroducaoForm';
 import ABNTForm from './components/Forms/ABNTForm'; // ADICIONAR ESTA LINHA
+import MapWithInfluenceAreas from './components/MapComponents/MapWithInfluenceAreas'; // Import the new component
 import { CapaData, IntroducaoData, EIVDocumentData, submitCapaData, submitIntroducaoData, submitEIVCompleto } from './services/api';
 
 const theme = createTheme({
@@ -229,6 +230,14 @@ function App() {
           <ABNTForm />
         </FullWidthPaper>
         {/* FIM DA SEÇÃO ABNT */}
+
+        {/* Render the map component here */}
+        <FullWidthPaper sx={{ p: 3, mt: 4, mb: 2 }}>
+          <Typography variant="h4" component="h2" gutterBottom align="center" sx={{ color: theme.palette.primary.main, mb: 2 }}>
+            Mapa de Áreas de Influência
+          </Typography>
+          <MapWithInfluenceAreas />
+        </FullWidthPaper>
 
       </Container>
     </ThemeProvider>
