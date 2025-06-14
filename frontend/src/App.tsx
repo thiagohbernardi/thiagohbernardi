@@ -13,6 +13,7 @@ import StepContent from '@mui/material/StepContent';
 
 import CapaForm from './components/Forms/CapaForm';
 import IntroducaoForm from './components/Forms/IntroducaoForm';
+import ABNTForm from './components/Forms/ABNTForm'; // ADICIONAR ESTA LINHA
 import { CapaData, IntroducaoData, EIVDocumentData, submitCapaData, submitIntroducaoData, submitEIVCompleto } from './services/api';
 
 const theme = createTheme({
@@ -218,6 +219,17 @@ function App() {
             </Button>
           </FullWidthPaper>
         )}
+
+        {/* SEÇÃO PARA FORMULÁRIO ABNT ADICIONADA ABAIXO */}
+        <FullWidthPaper sx={{ p: 3, mt: 4, mb: 2 }}> {/* mt: 4 para dar mais espaço */}
+          {/* Você pode querer um título aqui também, como fez para o EIV */}
+          {/* <Typography variant="h4" component="h2" gutterBottom align="center" sx={{ color: theme.palette.primary.main, mb: 2 }}>
+            Formatador de Documentos ABNT
+          </Typography> */}
+          <ABNTForm />
+        </FullWidthPaper>
+        {/* FIM DA SEÇÃO ABNT */}
+
       </Container>
     </ThemeProvider>
   );
